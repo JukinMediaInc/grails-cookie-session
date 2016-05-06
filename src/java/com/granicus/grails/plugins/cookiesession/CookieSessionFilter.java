@@ -1,6 +1,7 @@
 package com.granicus.grails.plugins.cookiesession;
 
 import org.apache.log4j.Logger;
+import org.codehaus.groovy.grails.commons.GrailsApplication;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
@@ -65,7 +66,10 @@ public class CookieSessionFilter extends OncePerRequestFilter implements Initial
  
       if( log.isTraceEnabled() ){ log.trace("doFilterInternal()"); }
 
-      if (request.getServletPath().startsWith("/api/")) {
+      Map config = ((GrailsApplication)applicationContext.getBean("grailsApplication")).getConfig().flatten();
+      String blacklistPath = (String) config.get("grails.plugin.cookiesession.blacklistPathBeginsWith");
+
+      if (blacklistPath != null && blacklistPath.length() > 0 && request.getServletPath().startsWith(blacklistPath)) {
           log.info("Skipping Cookie Session decoration for path: "+request.getServletPath());
           chain.doFilter(request, response);
 
