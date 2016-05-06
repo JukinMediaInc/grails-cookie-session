@@ -17,17 +17,12 @@
  *  ben@granicus.com or benlucchesi@gmail.com
  */
 
+
+import com.granicus.grails.plugins.cookiesession.*
 import org.springframework.web.filter.DelegatingFilterProxy
-import grails.util.Environment
-import com.granicus.grails.plugins.cookiesession.JavaSessionSerializer
-import com.granicus.grails.plugins.cookiesession.KryoSessionSerializer
-import com.granicus.grails.plugins.cookiesession.CookieSessionFilter
-import com.granicus.grails.plugins.cookiesession.CookieSessionRepository
-import com.granicus.grails.plugins.cookiesession.ExceptionCondenser
-import com.granicus.grails.plugins.cookiesession.SecurityContextSessionPersistenceListener
 
 class CookieSessionGrailsPlugin {
-    def version = "2.0.18.jk1"
+    def version = "2.0.18.jk2"
     def grailsVersion = "1.2.4 > *"
     def title = "Cookie Session Plugin" // Headline display name of the plugin
     def author = "Ben Lucchesi"
