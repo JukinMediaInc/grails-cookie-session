@@ -1,22 +1,19 @@
 package com.granicus.grails.plugins.cookiesession;
 
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import org.springframework.web.filter.OncePerRequestFilter;
-import java.io.IOException;
-
-import java.util.Map;
-import java.util.ArrayList;
-
+import org.apache.log4j.Logger;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.beans.BeansException;
+import org.springframework.web.filter.OncePerRequestFilter;
 
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.apache.log4j.Logger;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Map;
 
 public class CookieSessionFilter extends OncePerRequestFilter implements InitializingBean, ApplicationContextAware {
 
@@ -66,21 +63,28 @@ public class CookieSessionFilter extends OncePerRequestFilter implements Initial
             HttpServletResponse response, 
             FilterChain chain) throws IOException, ServletException {
  
-      if( log.isTraceEnabled() ){ log.trace("doFilterInteral()"); }
+      if( log.isTraceEnabled() ){ log.trace("doFilterInternal()"); }
 
-      SessionRepositoryRequestWrapper requestWrapper = new SessionRepositoryRequestWrapper( request, sessionRepository );
-      requestWrapper.setServletContext( this.getServletContext() );
-      requestWrapper.setSessionPersistenceListeners(this.sessionPersistenceListeners);
-      requestWrapper.restoreSession();
+      if (request.getServletPath().startsWith("/api/")) {
+          log.info("Skipping Cookie Session decoration for path: "+request.getServletPath());
+          chain.doFilter(request, response);
 
-      // if spring security integration is supported it is necessary to enforce session creation 
-      // if one does not exist yet. otherwise the security context will not be persisted and 
-      // propagated between requests if the application did not happen to use a session yet.
+      } else {
+          log.info("Using Cookie Session decoration for path: "+request.getServletPath());
+          SessionRepositoryRequestWrapper requestWrapper = new SessionRepositoryRequestWrapper(request, sessionRepository);
+          requestWrapper.setServletContext(this.getServletContext());
+          requestWrapper.setSessionPersistenceListeners(this.sessionPersistenceListeners);
+          requestWrapper.restoreSession();
 
-      boolean enforceSession = this.applicationContext.containsBeanDefinition("securityContextSessionPersistenceListener");
+          // if spring security integration is supported it is necessary to enforce session creation
+          // if one does not exist yet. otherwise the security context will not be persisted and
+          // propagated between requests if the application did not happen to use a session yet.
 
-      SessionRepositoryResponseWrapper responseWrapper = new SessionRepositoryResponseWrapper( response, sessionRepository, requestWrapper, enforceSession );
-      responseWrapper.setSessionPersistenceListeners(this.sessionPersistenceListeners);
-      chain.doFilter(requestWrapper, responseWrapper);
+          boolean enforceSession = this.applicationContext.containsBeanDefinition("securityContextSessionPersistenceListener");
+
+          SessionRepositoryResponseWrapper responseWrapper = new SessionRepositoryResponseWrapper(response, sessionRepository, requestWrapper, enforceSession);
+          responseWrapper.setSessionPersistenceListeners(this.sessionPersistenceListeners);
+          chain.doFilter(requestWrapper, responseWrapper);
+      }
     }
 }
