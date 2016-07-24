@@ -22,7 +22,7 @@ import com.granicus.grails.plugins.cookiesession.*
 import org.springframework.web.filter.DelegatingFilterProxy
 
 class CookieSessionGrailsPlugin {
-    def version = "2.0.18.jk3"
+    def version = "2.0.18.jk4"
     def grailsVersion = "1.2.4 > *"
     def title = "Cookie Session Plugin" // Headline display name of the plugin
     def author = "Ben Lucchesi"
@@ -32,7 +32,7 @@ class CookieSessionGrailsPlugin {
     def license = "APACHE"
 
     // Online location of the plugin's browseable source code.
-    def scm = [url: 'http://github.com/benlucchesi/grails-cookie-session-v2']
+    def scm = [url: 'http://github.com/JukinMediaInc/grails-cookie-session']
 
     //def loadAfter = ['controllers']
 
